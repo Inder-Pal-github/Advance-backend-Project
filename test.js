@@ -1,0 +1,19 @@
+db.airbnb.aggregate([
+    {
+        $group:{
+            _id:"$address.country",
+            totalReviews:{
+                $sum:{$size:"$reviews"}
+            },
+            avgRating:{
+                $avg:"$review_scores.review_scores_rating"
+            }
+        }
+    },
+    {
+        $sort:{"totalReviews":-1}
+    },
+    {
+        $limit:5
+    }
+])
