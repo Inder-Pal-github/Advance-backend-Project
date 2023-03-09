@@ -25,8 +25,10 @@ module.exports = {
   },
   // ---------------------------- Verifying access token ----------------------------//
   verifyAccessToken: (req, res, next) => {
-    if (!req.headers.authorization) return next(createError.Unauthorized());
-    const token = req.headers.authorization.split(" ")[1];
+    // console.log(req.cookies);
+    // const token = req.headers.authorization.split(" ")[1];
+    const token = req?.cookies["unitProjectAccessToken"] || req.headers.authorization.split(" ")[1];
+    if (!token) return next(createError.Unauthorized());
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
       if (err) {
         // creating a correct message so that we don't provide the Exact issue that happened to avoid malicious use of that token.
