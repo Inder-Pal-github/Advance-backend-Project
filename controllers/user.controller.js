@@ -64,13 +64,17 @@ module.exports = {
   logout: async (req, res, next) => {
     try {
       const  refreshToken  = req?.cookies["unitProjectRefreshToken"] || req?.headers?.authorization.split(" ")[1];
-      if (!refreshToken) throw createError.BadRequest();
-      const userId = await verifyRefreshToken(refreshToken);
-      let alltokens = JSON.parse(
-        fs.readFileSync("./refreshTokens.json", "utf-8")
-      );
-      alltokens = alltokens.filter((ele) => ele.userId !== refreshToken);
-      fs.writeFileSync("./refreshTokens.json", JSON.stringify(alltokens));
+      const  accessToken  = req?.cookies["unitProjectAccessToken"] || req?.headers?.authorization.split(" ")[1];
+      if (!refreshToken||!accessToken) throw createError.BadRequest();
+      // const userId = await verifyRefreshToken(refreshToken);
+      let allTokens = JSON.parse(fs.readFileSync("./refreshTokens.json","utf-8"));
+      allTokens = [...allTokens,{userId:refreshToken},{userId:accessToken}];
+      fs.writeFileSync("./refreshTokens.json",JSON.stringify(allTokens))
+      // let alltokens = JSON.parse(
+      //   fs.readFileSync("./refreshTokens.json", "utf-8")
+      // );
+      // alltokens = alltokens.filter((ele) => ele.userId !== refreshToken);
+      // fs.writeFileSync("./refreshTokens.json", JSON.stringify(alltokens));
       res.sendStatus(204);
     } catch (error) {
       next(error);

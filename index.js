@@ -1,8 +1,10 @@
 const express = require('express');
+const path = require('path');
 const { connection } = require('./config/db');
 const { verifyAccessToken } = require('./helpers/jwt.helpers');
 const { userRouter } = require('./routes/user.routes');
 const cookieParser = require("cookie-parser");
+const { GitHubLogin } = require('./controllers/github.controller');
 
 const app = express();
 
@@ -15,6 +17,11 @@ app.use(cookieParser());
 app.get("/",(req,res)=>{
     res.send("Unit-Project");
 });
+
+app.get("/api/github",(req,res)=>{
+  res.sendFile(path.join(__dirname,"views/github.html"));
+});
+app.get("/auth/github",GitHubLogin);
 
 app.use("/api/users",userRouter);
 

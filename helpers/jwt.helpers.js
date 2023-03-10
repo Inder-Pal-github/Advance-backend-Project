@@ -10,7 +10,7 @@ module.exports = {
       const payload = {};
       const secret = process.env.ACCESS_TOKEN_SECRET;
       const options = {
-        expiresIn: "20s",
+        expiresIn: "10m",
         issuer: "Ghost Rider",
         audience: userId, // can also provide the api verification, like if is being used by the authorized api or not.
       };
@@ -25,9 +25,11 @@ module.exports = {
   },
   // ---------------------------- Verifying access token ----------------------------//
   verifyAccessToken: (req, res, next) => {
-    // console.log(req.cookies);
-    // const token = req.headers.authorization.split(" ")[1];
     const token = req?.cookies["unitProjectAccessToken"] || req.headers.authorization.split(" ")[1];
+    const allTokens = JSON.parse(fs.readFileSync("./refreshTokens.json","utf-8"));
+    const blacklistedToken = allTokens.filter((ele)=>ele.userId==token);
+    if(blacklistedToken.length>0) return next(createError.Unauthorized());
+    // console.log(blacklistedToken,"blacklisted",token);
     if (!token) return next(createError.Unauthorized());
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
       if (err) {
@@ -47,7 +49,7 @@ module.exports = {
         const payload = {};
         const secret = process.env.REFRESH_TOKEN_SECRET;
         const options = {
-            expiresIn:"1m",
+            expiresIn:"1h",
             issuer :"Ghost Rider",
             audience:userId
         };
@@ -55,9 +57,6 @@ module.exports = {
             if(err){
                 reject(createError.InternalServerError());
             }
-            let allTokens = JSON.parse(fs.readFileSync("./refreshTokens.json","utf-8"));
-            allTokens = [...allTokens,{userId:token}];
-            fs.writeFileSync("./refreshTokens.json",JSON.stringify(allTokens))
             resolve(token);
         })
     })

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button><a href="https://github.com/login/oauth/authorize?client_id=82a606ed745e334ba492" >Continue with GitHub</a></button>
+  </body>
+  <script>
+    function loginByGitHub() {
+      fetch("http://localhost:8080/api/github", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((res)=>console.log(res))
+        .catch((err) => console.log(err));
+    }
+  </script>
+</html>
