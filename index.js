@@ -5,6 +5,7 @@ const { verifyAccessToken } = require('./helpers/jwt.helpers');
 const { userRouter } = require('./routes/user.routes');
 const cookieParser = require("cookie-parser");
 const { GitHubLogin } = require('./controllers/github.controller');
+const { mailRouter } = require('./routes/mail.routes');
 
 const app = express();
 
@@ -24,6 +25,8 @@ app.get("/api/github",(req,res)=>{
 app.get("/auth/github",GitHubLogin);
 
 app.use("/api/users",userRouter);
+
+app.use("/api/mail",mailRouter);
 
 app.get("/api/info",verifyAccessToken,(req,res)=>{
   res.send("Important data");
